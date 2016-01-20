@@ -4,10 +4,21 @@
     "http://struts.apache.org/dtds/struts-2.1.7.dtd">
     
 <struts>
-	<package name="default" namespace="/hrdept" extends="struts-default">
-		<action name="compute"  class="action.ComputeSalaryAction">
-			<result name="success">/display.jsp</result>
-			<result name="failure">/error.jsp</result>
+
+	<package name="default" extends="struts-default" namespace="/pages">
+		<action name="login" class="action.LoginAction">
+			<result name="admin" type="redirectAction">
+				<param name="actionName">admin</param>
+    			<param name="namespace">/admin</param>			
+			</result>
+			<result name="error">error.jsp</result>
 		</action>
+	</package>
+	
+	<package name="admin" extends="struts-default" namespace="/admin">
+			<action name="admin" class="action.admin.DatabaseManipulationAction">
+				<result name="success">database.jsp</result>
+				<result name="error">error.jsp</result>
+			</action>
 	</package>
 </struts>

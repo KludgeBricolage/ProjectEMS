@@ -2,13 +2,6 @@ package utility;
 
 public interface SQLCommands {
 /*
-	//Employee
-	String INSERT_EMPLOYEE = "insert into Employee(lastname, firstname, position, department) values(?,?,?,?)";
-	String GET_ALL_EMPLOYEES = "select * from employee";
-	String SEARCH_EMPLOYEE = "select * from employee where id=?";
-	String UPDATE_EMPLOYEE = "update Employee set lastname = ?, firstname = ?, position=?, department=? where id = ?";
-	String DELETE_EMPLOYEE = "delete from employee where id=?";
-*/
 	//Users
 	String GET_ALL_USER = "select student_id from users";
 	String SEARCH_USER = "select * from users where student_id=?";
@@ -38,4 +31,22 @@ public interface SQLCommands {
 	// Admin
 	String GET_ALL_ADMIN = "SELECT admin_id FROM admin";
 	String SEARCH_ADMIN = "SELECT * FROM admin WHERE admin_id = ?";
+*/
+
+	//Login
+	String GET_ALL_USER = "SELECT student_id FROM users";
+	String GET_ALL_ADMIN = "SELECT admin_id FROM admin";
+	
+	//Database Manipulation
+	String GET_ITEM_LIST = "SELECT item_id, category_name, brand_name, serial_no, property_no, available "
+						 + "FROM items "
+						 + "JOIN item_brand "
+						 + "ON items.brand=item_brand.brand_id "
+						 + "JOIN item_category "
+						 + "ON items.category=item_category.category_id";
+	String GET_CATEGORIES = "SELECT category_name FROM item_category";
+	String GET_BRANDS = "SELECT brand_name FROM item_brand";
+	
+	String ADD_ITEM = "INSERT INTO items(category, brand, serial_no, property_no, available) "
+					+ "VALUES (?, ?, ?, ?, 1)"; 
 }
