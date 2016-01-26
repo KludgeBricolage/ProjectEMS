@@ -34,19 +34,28 @@ public interface SQLCommands {
 */
 
 	//Login
-	String GET_ALL_USER = "SELECT student_id FROM users";
-	String GET_ALL_ADMIN = "SELECT admin_id FROM admin";
+	String GET_ALL_USER 	= "SELECT student_id FROM users";
+	String GET_ALL_ADMIN 	= "SELECT admin_id FROM admin";
 	
-	//Database Manipulation
-	String GET_ITEM_LIST = "SELECT item_id, category_name, brand_name, serial_no, property_no, available "
-						 + "FROM items "
-						 + "JOIN item_brand "
-						 + "ON items.brand=item_brand.brand_id "
-						 + "JOIN item_category "
-						 + "ON items.category=item_category.category_id";
-	String GET_CATEGORIES = "SELECT category_name FROM item_category";
-	String GET_BRANDS = "SELECT brand_name FROM item_brand";
+	//Database GUI
+	String GET_ITEM_LIST	= "SELECT item_id, category_name, brand_name, serial_no, property_no, available "
+						 	+ "FROM items "
+						 	+ "JOIN item_brand "
+						 	+ "ON items.brand=item_brand.brand_id "
+						 	+ "JOIN item_category "
+						 	+ "ON items.category=item_category.category_id "
+						 	+ "ORDER BY `items`.`item_id` ASC";
+	String GET_CATEGORIES 	= "SELECT category_name "
+							+ "FROM item_category "
+							+ "ORDER BY `item_category`.`category_id` ASC";
+	String GET_BRANDS 		= "SELECT brand_name "
+							+ "FROM item_brand "
+							+ "ORDER BY `item_brand`.`brand_id` ASC";
 	
-	String ADD_ITEM = "INSERT INTO items(category, brand, serial_no, property_no, available) "
-					+ "VALUES (?, ?, ?, ?, 1)"; 
+	String ADD_ITEM 		= "INSERT INTO items(category, brand, serial_no, property_no, available) "
+							+ "VALUES (?, ?, ?, ?, 1)";
+	String ADD_CATEGORY 	= "INSERT INTO item_category(category_name) "
+							+ "VALUES(?)";
+	String ADD_BRAND 		= "INSERT INTO item_brand(brand_name) "
+					 		+ "VALUES(?)";
 }

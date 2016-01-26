@@ -14,7 +14,7 @@
   	<div class="ui stacked segment">
 	  	<h1>Login</h1>
 		<form action="login" method="post" class="ui large form">
-			<p><input type="text" name="userId" placeholder="User ID"></p>	
+			<p><input type="text" name="userId" placeholder="User ID" required></p>	
 			<p><input type="submit" value="Login" class="ui fluid large submit button"/></p>
 		</form>
 	</div>

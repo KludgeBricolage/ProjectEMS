@@ -104,18 +104,18 @@ public class SQLOperation implements SQLCommands {
 		}	
 	}
 	public static List<String> getBrands() {
-		List<String> categories = new ArrayList<String>();
+		List<String> brands = new ArrayList<String>();
 		ResultSet rs = null;
 		try {
 			Statement stmt = connection.createStatement();
 			rs = stmt.executeQuery(GET_BRANDS);
 			while(rs.next()) {
-				categories.add(rs.getString(1));
+				brands.add(rs.getString(1));
 			}
-			return categories;
+			return brands;
 		} catch (Exception e) {
 			System.out.println("Exception @ getBrands: " + e.getMessage());
-			return categories; 
+			return brands; 
 		}	
 	}
 	
@@ -131,6 +131,28 @@ public class SQLOperation implements SQLCommands {
 			ps.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("Exception @ addItem: " + e.getMessage());
+		}
+	}
+	public static void addCategory(String category) {
+		PreparedStatement ps;
+		try {
+			ps = connection.prepareStatement(ADD_CATEGORY);
+			
+			ps.setString(1, category);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Exception @ addCategory: " + e.getMessage());
+		}
+	}
+	public static void addBrand(String brand) {
+		PreparedStatement ps;
+		try {
+			ps = connection.prepareStatement(ADD_BRAND);
+			
+			ps.setString(1, brand);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Exception @ addBrand: " + e.getMessage());
 		}
 	}
 }

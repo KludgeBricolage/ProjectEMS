@@ -19,10 +19,9 @@
 	</script>
 </head>
 <body>
-
-	<s:set name="itemList" value="%{itemList}"/>
-	<s:set name="categoryList" value="%{categoryList}"/>
-	<s:set name="brandList" value="%{brandList}"/>		
+	<s:set id="itemList" value="%{itemList}"/>
+	<s:set id="categoryList" value="%{categoryList}"/>
+	<s:set id="brandList" value="%{brandList}"/>		
 	
 	<h2>Item List</h2>
 	<s:iterator value="itemList" var="item" status="pos">
@@ -32,9 +31,11 @@
 		Serial: <s:property value="serialNo"/> <br/>
 		Property: <s:property value="propertyNo"/> <br/>
 		Available: <s:property value="available"/> <br/>
+		==========<br/>
 	</s:iterator>  
 	
 	<hr/>
+	
 	<h2>List categories and brands</h2>
 	<b>Categories:</b> 
 	<s:iterator value="categoryList">
@@ -45,7 +46,9 @@
 	<s:iterator value="brandList">
 		<s:property/>, 
 	</s:iterator>
+	
 	<hr/>
+	
 	<h2>Add item</h2>
 
 	<p>Category:
@@ -67,9 +70,49 @@
 
 	<form action="admin.action" method="post">
 		<input type="hidden" id="sendData" name="addItem" value="">
+		<p><input id="btnSubmit" type="submit" value="Submit"/> <input type="reset"/></p>
+	</form>
+	
+	<hr/>    
+	
+	<h2>Add category</h2>
+	<form action="admin.action" method="post">
+		<p>Category: <input type="text" name="addCategory"/></p>
+		<p><input type="submit" value="Submit"/> <input type="reset"/></p>
+	</form>
+	<h2>Add brand</h2>
+	<form action="admin.action" method="post">
+		<p>Brand: <input type="text" name="addBrand"/></p>
+		<p><input type="submit" value="Submit"/> <input type="reset"/></p>
+	</form>
+	
+	<hr/>
+	
+	<h2>Edit item -> dropdown item_id -> dropdown for cat, brand + 2 text boxes</h2>
+	
+	<h2>Edit cat</h2>
+	
+	<h2>Edit brand</h2>
+	
+	<p>Brand:
+	  <select id="brandEdit"> <!-- Add default value + Error handling if default is selected -->
+	    <s:iterator value="brandList">
+  			  <option value="<s:property/>"><s:property/></option>
+	    </s:iterator>
+	  </select>
+	</p>
+	
+	
+	<form action="admin.action" method="post">
+		<p>Brand: <input type="text" name="brandChange"/></p>
+		<p><input type="submit" value="Submit"/> <input type="reset"/></p>
+	</form>
+
+	<hr/>
+	
+	<h2>DELETE ITEM</h2>
+	
 		
-		<p><input id="btnSubmit" type="submit" value="Submit"/></p>
-		<p><input type="reset"/></p>
-	</form>    
+	
 </body>
 </html>
