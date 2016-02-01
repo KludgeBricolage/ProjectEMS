@@ -9,6 +9,7 @@
 		<action name="login" class="action.LoginAction">
 			<result name="user" type="redirectAction">
 				<param name="actionName">user</param>
+				<param name="i">${userId}</param>
 				<param name="namespace">/pages</param>
 			</result>
 		
@@ -17,6 +18,7 @@
     			<param name="namespace">/admin</param>			
 			</result>
 			<result name="error">error.jsp</result>
+			<result name="login">login.jsp</result>
 		</action>
 	</package>
 	
@@ -24,12 +26,13 @@
 		<action name="user" class="action.user.RequestAction">
 			<result name="success">request.jsp</result>
 			<result name="error">error.jsp</result>
+			<result name="land">land.jsp</result>
 		</action>
 	</package>
 	
 	<package name="admin" extends="struts-default" namespace="/admin">
-		<action name="admin" class="action.admin.DatabaseGUIAction">
-			<result name="success">database.jsp</result>
+		<action name="admin" class="action.admin.AdminAction">
+			<result name="success">admin.jsp</result>
 			<result name="error">error.jsp</result>
 		</action>
 	</package>

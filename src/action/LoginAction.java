@@ -3,27 +3,50 @@ package action;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
+
+import org.apache.struts2.interceptor.SessionAware;
 
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
 
 import security.Security;
 import utility.SQLOperation;
 
-public class LoginAction implements Action {
+public class LoginAction extends ActionSupport implements SessionAware {
+	
+	// For SessionAware :: Reference = http://www.codejava.net/frameworks/struts/working-with-httpsession-in-struts2-a-login-example
+	private Map<String, Object> session;
+	@Override
+	public void setSession(Map<String, Object> session) {
+		this.session = session;
+	}
+	
 	private String userId;
-	private String formResult = "empty";
 	
 	public String execute() {
 		
-		Connection connection = SQLOperation.getConnection();
-		String ret = LOGIN;
-		if(formResult.equals("empty")) {
-			if (connection != null) {	
+		if(userId.equals("LOGOUTUSER")) {
+			if (session.containsKey("userIdSession")) {
+	            session.remove("userIdSession");
+	            return LOGIN;
+	        }
+		}
+		
+		String loggedUsername = null;
+		try {	
+			Connection connection = SQLOperation.getConnection();
+			
+			if (connection != null) {
 				ResultSet rs = SQLOperation.getAllUser();
 				ResultSet rsForAdmin = SQLOperation.getAllAdmin();
-				try {
+				//if session exists
+				if(session.containsKey("userIdSession")) {
+					loggedUsername = (String) session.get("userIdSession");
+					userId = loggedUsername;
 					while(rs.next()) {
 						if(userId.equals(rs.getString("student_id"))) {
+							session.put("userIdSession", userId	);
 							userId = Security.encrypt(rs.getString("student_id"));
 							return "user";
 						} 
@@ -33,33 +56,35 @@ public class LoginAction implements Action {
 							return "admin";
 						}	
 					}
-				} catch (SQLException e) {
-					e.printStackTrace(); //TODO CHANGE THIS
-				}	
+				} else { //if session doesn't exist -> create		
+					while(rs.next()) {
+						if(userId.equals(rs.getString("student_id"))) {
+							session.put("userIdSession", userId	);
+							userId = Security.encrypt(rs.getString("student_id"));
+							return "user";
+						} 
+					}
+					while(rsForAdmin.next()) {
+						if(userId.equals(rsForAdmin.getString("admin_id"))) {
+							return "admin";
+						}	
+					}
+				}
 			} else {
 				return ERROR;
 			}
-		} else {
-			formResult = Security.encrypt(formResult);
-			ret = "send";
+		} catch (Exception e) {
+			System.out.println("Exception @ Login: " + e.getMessage());
+			return ERROR;
 		}
-		return ret;
+		return LOGIN;
 	}
 	
 	//Getters and Setters
 	public String getUserId() {
 		return userId;
 	}
-
 	public void setUserId(String userId) {
 		this.userId = userId;
-	}
-	
-	public String getFormResult() {
-		return formResult;
-	}
-
-	public void setFormResult(String formResult) {
-		this.formResult = formResult;
 	}
 }

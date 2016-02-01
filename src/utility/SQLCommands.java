@@ -40,10 +40,18 @@ public interface SQLCommands {
 	//Database GUI
 	String GET_ITEM_LIST	= "SELECT item_id, category_name, brand_name, serial_no, property_no, available "
 						 	+ "FROM items "
-						 	+ "JOIN item_brand "
-						 	+ "ON items.brand=item_brand.brand_id "
+						 	+ "JOIN item_brand " 						//table name
+						 	+ "ON items.brand = item_brand.brand_id "	//table.column = table.column
 						 	+ "JOIN item_category "
-						 	+ "ON items.category=item_category.category_id "
+						 	+ "ON items.category = item_category.category_id "
+						 	+ "AND available = 1 "
+						 	+ "ORDER BY `items`.`item_id` ASC";
+	String GET_ALL_ITEMS	= "SELECT item_id, category_name, brand_name, serial_no, property_no, available "
+						 	+ "FROM items "
+						 	+ "JOIN item_brand " 						
+						 	+ "ON items.brand = item_brand.brand_id "
+						 	+ "JOIN item_category "
+						 	+ "ON items.category = item_category.category_id "
 						 	+ "ORDER BY `items`.`item_id` ASC";
 	String GET_CATEGORIES 	= "SELECT category_name "
 							+ "FROM item_category "
@@ -58,4 +66,39 @@ public interface SQLCommands {
 							+ "VALUES(?)";
 	String ADD_BRAND 		= "INSERT INTO item_brand(brand_name) "
 					 		+ "VALUES(?)";
+	
+	//Request
+	String GET_ROOMS		= "SELECT room "
+							+ "FROM request_rooms";
+	String CONVERT_ROOM		= "SELECT room_id "
+							+ "FROM request_rooms "
+							+ "WHERE room = ?";
+	String REQUEST_ITEM		= "INSERT INTO request(student_id, item_id, room, date_req, date_res, date_deadline, "
+							+ "declined, allowed, returned) "
+							+ "VALUES(?, ?, ?, ?, ?, ?, 0, 0, 0)";
+	String GET_REQUEST		= "SELECT student_id, item_category.category_name, item_brand.brand_name, serial_no, property_no, request_rooms.room, date_req, date_res, date_deadline, "
+							+ "declined, allowed, returned, request_id, request.item_id "
+							+ "FROM request "
+							+ "JOIN items "
+							+ "ON items.item_id = request.item_id "
+							+ "JOIN request_rooms "
+							+ "ON request_rooms.room_id = request.room "
+						 	+ "JOIN item_category "
+						 	+ "ON items.category = item_category.category_id "
+							+ "JOIN item_brand " 					
+						 	+ "ON items.brand = item_brand.brand_id "
+						 	+ "WHERE declined = 0 "
+						 	+ "AND returned = 0 ";
+	String DECLINED_REQUEST	= "UPDATE request "
+							+ "SET declined = 1 "
+							+ "WHERE request_id = ?";
+	String ACCEPT_REQUEST	= "UPDATE request "
+							+ "SET allowed = 1 "
+							+ "WHERE request_id = ?";
+	String RETURN_REQUEST	= "UPDATE request "
+							+ "SET returned = 1 "
+							+ "WHERE request_id = ?";
+	String ITEM_AVAILABLE	= "UPDATE items "
+							+ "SET available = ? "
+							+ "WHERE item_id = ?";
 }

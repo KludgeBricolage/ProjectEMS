@@ -6,28 +6,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
 
 import model.ItemBean;
+import model.RequestBean;
+import utility.SQLCommands;
 import utility.SQLOperation;
 
-public class DatabaseGUIAction implements Action{
+public class AdminAction extends ActionSupport implements SQLCommands {
 	
 	private List<ItemBean> itemList = new ArrayList<ItemBean>();
 	private List<String> categoryList = new ArrayList<String>();
 	private List<String> brandList = new ArrayList<String>();
+	private List<RequestBean> requestList = new ArrayList<RequestBean>();
 
-	private String addItem = "none", addCategory = "none", addBrand = "none";
+	private String addItem, addCategory, addBrand;
+	private String response, available;
 	
 	public String execute() {
 		Connection connection = SQLOperation.getConnection();
 		
 		if (connection != null) {
-			itemList = SQLOperation.getItemList();
+			itemList = SQLOperation.getItemList(GET_ALL_ITEMS);
 			categoryList = SQLOperation.getCategories();
 			brandList = SQLOperation.getBrands();
-			//Move to a different return value
+			requestList = SQLOperation.getRequestList();
 			//Adding
-			if(!addItem.equals("none")) {
+			if(addItem != null) {
 				int category = 0, brand = 0;
 				String serialNo = "", propertyNo = "";
 				
@@ -50,16 +55,43 @@ public class DatabaseGUIAction implements Action{
 				SQLOperation.addItem(category, brand, serialNo, propertyNo);
 			}
 			//Add category + brand
-			if(!addCategory.equals("none")) {
+			if(addCategory != null) {
 				if(categoryList.contains(addCategory) == false) {
 					SQLOperation.addCategory(addCategory);
 				}
 			}
-			if(!addBrand.equals("none")) {
+			if(addBrand != null) {
 				if(brandList.contains(addBrand) == false) {
 					SQLOperation.addBrand(addBrand);
 				}
 			}
+			//Response
+			if(response != null) {				
+				String first = response.substring(0, 1);
+				int reqId = Integer.parseInt(response.substring(1));
+							
+				if(first.equals("D")) {
+					SQLOperation.respondRequest(DECLINED_REQUEST, reqId);
+				}
+				if(first.equals("A")) {
+					SQLOperation.respondRequest(ACCEPT_REQUEST, reqId);
+				}
+				if(first.equals("R")) {
+					SQLOperation.respondRequest(RETURN_REQUEST, reqId);
+				}
+			}
+			//Available
+			if(available != null) {
+				String state = available.substring(0, 1);
+				int itemId = Integer.parseInt(available.substring(1)) + 1;
+				if(state.equals("T")) {
+					SQLOperation.itemAvailability(false, itemId);
+				}
+				if(state.equals("F")) {
+					SQLOperation.itemAvailability(true, itemId);
+				}
+			}
+			
 			return SUCCESS;
 		} else {
 			return ERROR;
@@ -108,5 +140,29 @@ public class DatabaseGUIAction implements Action{
 
 	public void setAddBrand(String addBrand) {
 		this.addBrand = addBrand;
+	}
+
+	public List<RequestBean> getRequestList() {
+		return requestList;
+	}
+
+	public void setRequestList(List<RequestBean> requestList) {
+		this.requestList = requestList;
+	}
+
+	public String getResponse() {
+		return response;
+	}
+
+	public void setResponse(String response) {
+		this.response = response;
+	}
+
+	public String getAvailable() {
+		return available;
+	}
+
+	public void setAvailable(String available) {
+		this.available = available;
 	}
 }
