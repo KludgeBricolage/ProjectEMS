@@ -19,16 +19,17 @@ public class RequestAction implements Action, SQLCommands {
 	private List<ItemBean> itemList = new ArrayList<ItemBean>();
 	private List<String> roomList = new ArrayList<String>();
 	private List<String> categoryList = new ArrayList<String>();
+	private int deadlineDuration = 0;
 	
 	private String i;
 	private String data;
 	
 	public String execute() {
-		
+	  try {
 		Connection connection = SQLOperation.getConnection();
-		
+	
 		if(data != null) {
-		  try {
+		  
 			String[] dataArray = getData().split(",");
 			String[] items = dataArray[4].split(";");
 			DateFormat df= new SimpleDateFormat("MM/dd/yyyy");
@@ -39,61 +40,40 @@ public class RequestAction implements Action, SQLCommands {
 				
 			for(String itemId: items) {
 							
-			SQLOperation.requestItem(dataArray[0], SQLOperation.convert(CONVERT_ROOM, dataArray[3]), 
-					Integer.valueOf(itemId), new java.sql.Date(dateRequested.getTime()), 
+			SQLOperation.requestItem(dataArray[0], Integer.valueOf(itemId), 
+					SQLOperation.convert(CONVERT_ROOM, dataArray[3]), new java.sql.Date(dateRequested.getTime()), 
 					new java.sql.Date(dateOfReserve.getTime()), new java.sql.Date(dateDeadline.getTime()));
 			}
 			return "land";
-		  } catch (Exception e) {
-			  System.out.println("Exception @ RequestAction: " + e.getMessage());
-		  }
+		  
 		}
-		
+	
 		if (connection != null) {
 			roomList = SQLOperation.getRooms();
 			itemList = SQLOperation.getItemList(GET_ITEM_LIST);
 			categoryList = SQLOperation.getCategories();
+			deadlineDuration = SQLOperation.getDeadlineDuration();
 			return SUCCESS;
 		} else {
 			return ERROR;
 		}
+	  } catch (Exception e) {
+		  System.out.println("Exception @ RequestAction: " + e.getMessage());
+		  return ERROR;
+	  }
 	}
 	
 	//Getters and Setters
-	public List<ItemBean> getItemList() {
-		return itemList;
-	}
-	public void setItemList(List<ItemBean> itemList) {
-		this.itemList = itemList;
-	}
-
-	public List<String> getRoomList() {
-		return roomList;
-	}
-	public void setRoomList(List<String> roomList) {
-		this.roomList = roomList;
-	}
-
-	public String getI() {
-		return Security.decrypt(i);
-	}
-	public void setI(String i) {
-		this.i = i;
-	}
-
-	public String getData() {
-		return data;
-	}
-	public void setData(String data) {
-		this.data = data;
-	}
-
-	public List<String> getCategoryList() {
-		return categoryList;
-	}
-
-	public void setCategoryList(List<String> categoryList) {
-		this.categoryList = categoryList;
-	}
-	
+	public List<ItemBean> getItemList() { return itemList; }
+	public void setItemList(List<ItemBean> itemList) { this.itemList = itemList; }
+	public List<String> getRoomList() {	return roomList; }
+	public void setRoomList(List<String> roomList) { this.roomList = roomList; }
+	public String getI() { return Security.decrypt(i); }
+	public void setI(String i) { this.i = i; }
+	public String getData() { return data; }
+	public void setData(String data) { this.data = data; }
+	public List<String> getCategoryList() {	return categoryList; }
+	public void setCategoryList(List<String> categoryList) { this.categoryList = categoryList; }
+	public int getDeadlineDuration() { return deadlineDuration; }
+	public void setDeadlineDuration(int deadlineDuration) {	this.deadlineDuration = deadlineDuration; }
 }

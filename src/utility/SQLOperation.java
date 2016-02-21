@@ -12,22 +12,13 @@ import java.util.List;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import javax.swing.table.DefaultTableModel;
 
+import security.Security;
 import model.ItemBean;
 import model.RequestBean;
+import model.StudentBean;
 
-public class SQLOperation implements SQLCommands {
-	
-	/*
-	 * Notes:
-	 *	- Can make global function for getting one cell :: get(list, cmd)
-	 *		- Could make global even if not one cell
-	 * 		- Planned Convention :: list name = func, exception and list name
-	 * 		- Drawback :: Maintainence @ Actions
-	 * 		- Skip for now since deadlines :>
-	 */
-	
+public class SQLOperation implements SQLCommands {	
 	
 	private static Connection connection;
 	private SQLOperation() {}
@@ -70,6 +61,7 @@ public class SQLOperation implements SQLCommands {
 		}	
 		return rs;
 	}
+	//Admin
 	public static ResultSet getAllAdmin() {	
 		ResultSet rs = null;
 		try {
@@ -81,8 +73,19 @@ public class SQLOperation implements SQLCommands {
 		}
 		return rs;
 	}
-	
-	//Admin Database
+	public static void addAdmin(String adminId, String name, String password) {
+		PreparedStatement ps;		
+		try {
+			ps = connection.prepareStatement(ADD_ADMIN);
+			ps.setString(1, adminId);
+			ps.setString(2, name);
+			ps.setString(3, Security.encrypt(password));
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Exception @ addAdmin: " + e.getMessage());
+		}
+	}
+	//Items
 	public static List<ItemBean> getItemList(String cmd) {
 		List<ItemBean> itemList = new ArrayList<>();
 		ResultSet rs = null;
@@ -100,7 +103,21 @@ public class SQLOperation implements SQLCommands {
 		}	
 		return itemList;
 	}
-	
+	public static void addItem(int category, int brand, String serialNo, String propertyNo) {
+		PreparedStatement ps;
+		try {
+			ps = connection.prepareStatement(ADD_ITEM);
+			
+			ps.setInt	(1, category);
+			ps.setInt	(2, brand);
+			ps.setString(3, serialNo);
+			ps.setString(4, propertyNo);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Exception @ addItem: " + e.getMessage());
+		}
+	}
+	//Category
 	public static List<String> getCategories() {
 		List<String> categories = new ArrayList<String>();
 		ResultSet rs = null;
@@ -116,6 +133,19 @@ public class SQLOperation implements SQLCommands {
 			return categories; 
 		}	
 	}
+	
+	public static void addCategory(String category) {
+		PreparedStatement ps;
+		try {
+			ps = connection.prepareStatement(ADD_CATEGORY);
+			
+			ps.setString(1, category);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Exception @ addCategory: " + e.getMessage());
+		}
+	}
+	//Brand
 	public static List<String> getBrands() {
 		List<String> brands = new ArrayList<String>();
 		ResultSet rs = null;
@@ -131,32 +161,7 @@ public class SQLOperation implements SQLCommands {
 			return brands; 
 		}	
 	}
-	
-	public static void addItem(int category, int brand, String serialNo, String propertyNo) {
-		PreparedStatement ps;
-		try {
-			ps = connection.prepareStatement(ADD_ITEM);
-			
-			ps.setInt	(1, category);
-			ps.setInt	(2, brand);
-			ps.setString(3, serialNo);
-			ps.setString(4, propertyNo);
-			ps.executeUpdate();
-		} catch (Exception e) {
-			System.out.println("Exception @ addItem: " + e.getMessage());
-		}
-	}
-	public static void addCategory(String category) {
-		PreparedStatement ps;
-		try {
-			ps = connection.prepareStatement(ADD_CATEGORY);
-			
-			ps.setString(1, category);
-			ps.executeUpdate();
-		} catch (Exception e) {
-			System.out.println("Exception @ addCategory: " + e.getMessage());
-		}
-	}
+
 	public static void addBrand(String brand) {
 		PreparedStatement ps;
 		try {
@@ -169,7 +174,7 @@ public class SQLOperation implements SQLCommands {
 		}
 	}
 	
-	//Request
+	//Rooms
 	public static List<String> getRooms() {
 		List<String> rooms = new ArrayList<String>();
 		ResultSet rs = null;
@@ -185,7 +190,18 @@ public class SQLOperation implements SQLCommands {
 			return rooms; 
 		}	
 	}
-	
+	public static void addRoom(String room) {
+		PreparedStatement ps;
+		try {
+			ps = connection.prepareStatement(ADD_ROOM);
+			
+			ps.setString(1, room);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Exception @ addRoom: " + e.getMessage());
+		}
+	}
+	//Converts modular db to get FK
 	public static int convert(String sqlCmd, String value) {
 		PreparedStatement ps;
 		ResultSet rs;
@@ -201,11 +217,11 @@ public class SQLOperation implements SQLCommands {
 	        }
 			return 0;
 		} catch (Exception e) {
-			System.out.println("Exception @ addCategory: " + e.getMessage());
+			System.out.println("Exception @ convert: " + e.getMessage());
 			return 0;
 		}
 	}
-	
+	//Request
 	public static void requestItem(String userId, int roomId, int itemId, Date dateReq, Date dateOfReserve, Date dateDeadline) {
 		PreparedStatement ps;
 		try {
@@ -282,7 +298,7 @@ public class SQLOperation implements SQLCommands {
 			System.out.println("Exception @ respondRequest: " + e.getMessage());
 		}
 	}
-	
+	//Item Availability (Delete item)
 	public static void itemAvailability(boolean available, int itemId) {
 		try {
 			PreparedStatement ps; 
@@ -293,6 +309,92 @@ public class SQLOperation implements SQLCommands {
 			ps.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("Exception @ itemAvailability: " + e.getMessage());
+		}
+	}
+	//Deadline Duration
+	public static int getDeadlineDuration() {
+		ResultSet rs = null;
+		int duration = 1;
+		try {
+			Statement stmt = connection.createStatement();
+			rs = stmt.executeQuery(DATE_DEADLINE);
+			while(rs.next()) {
+				duration = rs.getInt(1);
+			}
+			return duration;
+		} catch (Exception e) {
+			System.out.println("Exception @ getDeadlineDuration: " + e.getMessage());
+		}
+		return duration;	
+	}
+	public static void updateDeadlineDuration(int duration) {
+		PreparedStatement ps;
+		try {
+			ps = connection.prepareStatement(UPDATE_DEADLINE);
+			
+			ps.setInt(1, duration);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Exception @ updateDeadlineDuration: " + e.getMessage());
+		}
+	}
+	//Courses
+	public static List<String> getCourses() {
+		List<String> courses = new ArrayList<String>();
+		ResultSet rs = null;
+		try {
+			Statement stmt = connection.createStatement();
+			rs = stmt.executeQuery(GET_COURSE);
+			while(rs.next()) {
+				courses.add(rs.getString(1));
+			}
+			return courses;
+		} catch (Exception e) {
+			System.out.println("Exception @ getCourses: " + e.getMessage());
+			return courses; 
+		}	
+	}
+	public static void addCourse(String course) {
+		PreparedStatement ps;
+		try {
+			ps = connection.prepareStatement(ADD_COURSE);
+			
+			ps.setString(1, course);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Exception @ addCourse: " + e.getMessage());
+		}
+	}
+	//Students
+	public static List<StudentBean> getStudentList() {
+		List<StudentBean> studentList = new ArrayList<>();
+		ResultSet rs = null;
+		try {
+			Statement stmt = connection.createStatement();
+			rs = stmt.executeQuery(GET_STUDENTS);
+			while(rs.next()) {
+				studentList.add(
+					new StudentBean(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4))
+				);
+			}
+		} catch (Exception e) {
+			System.out.println("Exception @ getStudentList: " + e.getMessage());
+			return studentList; 
+		}	
+		return studentList;
+	}
+	public static void addStudent(String studentId, String firstName, String lastName, int courseId) {
+		PreparedStatement ps;
+		try {
+			ps = connection.prepareStatement(ADD_STUDENT);
+			
+			ps.setString(1, studentId);
+			ps.setString(2, firstName);
+			ps.setString(3, lastName);
+			ps.setInt	(4, courseId);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Exception @ addStudent: " + e.getMessage());
 		}
 	}
 }

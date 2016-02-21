@@ -21,18 +21,21 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/assets/js/tablesort.js"></script>				
 </head>
 <body style="overflow:hidden">
-
+  <div class="container">
   <s:set id="itemList" value="%{itemList}"/>
   <s:set id="roomList" value="%{roomList}"/>
   <s:set id="categoryList" value="%{categoryList}"/>
+  <s:set id="deadlineDuration" value="%{deadlineDuration}"/>
   <s:set id="user" value="%{i}"/>
+  
   <input id="user" type="hidden" value="<s:property value="user"/>">
   <input id="categoryList" type="hidden" value="<s:property value="categoryList"/>">
+  <input id="deadlineDuration" type="hidden" value="<s:property value="deadlineDuration"/>">
   <input type="hidden" id="catCount" value="<s:property value="%{#categoryList.size()}"/>">
   <s:iterator value="categoryList" var="item" status="pos">
      <input id="catItem<s:property value="%{#pos.index}"/>" type="hidden" value="<s:property/>" />
   </s:iterator>
-  
+  </div>
   <div class="ui top fixed menu">
     <div class="left menu">
 	    <div class="item" style="margin:0;padding:0">
@@ -91,7 +94,7 @@
 	  <div class="ui top aligned centered grid" style="height:800px !important">
 	  	<div class="fifteen wide center aligned column"><h1>Select Items to Reserve</h1></div>
 		<div class="four wide center aligned column" style="height:80%;overflow:auto">
-			<select id="catSearch" name="categories" class="ui fluid dropdown">
+			<select id="catSearch" name="categories" class="ui fluid search selection dropdown">
 				<option value="">Search Categories</option>
 				<option value="All">All</option>
 			</select>

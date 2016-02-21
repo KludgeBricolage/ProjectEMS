@@ -19,6 +19,9 @@
 				<input type="hidden" id="userId" name="userId" value="LOGOUTUSER">
 				<p><button type="submit" name="submit" class="ui blue button" value="LOGOUT">Logout</button></p>
 			</form>
+			<form action="../index.jsp" method="post">
+				<p><input type="submit" class="ui blue button" value="Again"/></p>
+			</form>		
 		</div>
 	  </div>
 	</div>	

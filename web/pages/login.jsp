@@ -13,7 +13,7 @@
   	<h1 class="ui header" style="margin-top:30%">Login</h1>
   	<div class="ui raised segment">
 	  	<h2>iACADEMY Item Reservation</h2>
-		<form name="login" action="login" method="post" class="ui large form">
+		<form id="login "name="login" action="login" method="post" class="ui large form">
 			<p><input type="text" id="user" name="userId" placeholder="User ID"></p>	
 			<p><input type="submit" value="Login" class="ui fluid large submit blue button"/></p>
 		</form>
@@ -39,9 +39,7 @@
   				checkSession();
 			}
 		});
-	});
-	$(".submit").click(function(e) {
-		$("#user").val($("#user").val().replace("-", "")); //Wait for database. Remove this if '-' is given
+		
 	});
 </script>
 </html>

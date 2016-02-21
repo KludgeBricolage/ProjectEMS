@@ -3,6 +3,7 @@ $(document).ready(function() {
     $('.message .close').on('click', function() { $(this).closest('.message').transition('fade'); });
     $('.ui.dropdown').dropdown();
     $('.sortable.table').tablesort();
+	$('#catSearch').dropdown();
     
     $(function() {
 		var count = $('#catCount').val();
@@ -27,6 +28,7 @@ $(document).ready(function() {
 		});
 	});
 	//Date picker ;; http://www.daterangepicker.com/
+    var dateNeeded, arrayDate, dateDeadline, deadlineDuration;
     $(function() {
         $('input[name="date"]').daterangepicker({
             singleDatePicker: true,
@@ -35,9 +37,13 @@ $(document).ready(function() {
         }, 
         function() {
         	dateNeeded = $("#dateNeeded").val();
-        	arrayDate = dateNeeded.split('/');
-        	dateDeadline = arrayDate[0] + "/" + (+arrayDate[1] + 1) + "/" + arrayDate[2];
-        	//alert("Return deadline is 24 hours: " + dateDeadline);
+        	dateNeeded = $("#dateNeeded").val();
+        	deadlineDuration = $("#deadlineDuration").val();
+    		arrayDate = dateNeeded.split('/');
+//    		dateDeadline = arrayDate[0] + "/" + (+ + +deadlineDuration) + "/" + ;
+    		dateDeadline = new Date(arrayDate[2], arrayDate[0], arrayDate[1]);
+    		dateDeadline.setDate(dateDeadline.getDate() + +deadlineDuration);
+    		dateDeadline = String(('0' + dateDeadline.getMonth()).slice(-2) + "/" + ('0' + dateDeadline.getDate()).slice(-2) + "/" + dateDeadline.getFullYear());
         });
     });    
     //Step 2
@@ -75,21 +81,16 @@ $(document).ready(function() {
     });
     //Step 3
     
-    var dateNeeded, arrayDate, dateDeadline, room, IDs, ids, names, user;
+    var room, IDs, ids, names, user;
     
     $('#next2').on( 'click', function(){
-	    dateNeeded = $("#dateNeeded").val();
-		arrayDate = dateNeeded.split('/');
-		dateDeadline = arrayDate[0] + "/" + (+arrayDate[1] + 1) + "/" + arrayDate[2];
+	    
 		user = $('#user').val();
 		
 		room = $("#room").val();
 		IDs = $("#cart a[id]").map(function() { return this.id; }).get();	
 		ids = "";
 		IDs.forEach(function(line) { ids += line + ";";	} );
-		if(+arrayDate[1] < 10) {
-			dateDeadline = arrayDate[0] + "/0" + (+arrayDate[1] + 1) + "/" + arrayDate[2];
-		}
 		
 		names = $("#cart a[name]").map(function() { return this.name; }).get();
 		
